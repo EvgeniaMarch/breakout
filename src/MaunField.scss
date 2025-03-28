@@ -1,0 +1,16 @@
+.field {
+  height: 700px;
+  width: 1500px;
+  background-color: rgb(254, 226, 251);
+  position: relative;
+  // padding: 0 10px;
+  .platform {
+    height: 20px;
+    width: 100px;
+    border-radius: 5px;
+    background-color: rgb(112, 78, 78);
+    position: absolute;
+    left: var(--platform-x-position);
+    bottom: 30px;
+  }
+}
