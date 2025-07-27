@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs = require('fs');
 
 const commitMsgPath = process.argv[2];
 console.log('🚀 ~ process:', process.argv);
