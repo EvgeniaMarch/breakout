@@ -8,4 +8,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --platform-x-position: 0px;
+  /* --ball-x-position: 0px;
+  --ball-y-position: 630px; */
 }

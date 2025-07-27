@@ -1,16 +1,23 @@
 .field {
-  height: 700px;
-  width: 1500px;
+  // height: 700px;
+  // width: 1000px;
   background-color: rgb(254, 226, 251);
   position: relative;
   // padding: 0 10px;
   .platform {
-    height: 20px;
-    width: 100px;
+    // height: 20px;
+    // width: 100px;
     border-radius: 5px;
-    background-color: rgb(112, 78, 78);
+    background-color: rgb(118, 25, 25);
     position: absolute;
-    left: var(--platform-x-position);
-    bottom: 30px;
+    transform: translate(var(--platform-x-position), 650px)
+  }
+  .ball {
+    // height: 20px;
+    // width: 20px;
+    border-radius: 50%;
+    background-color: rgb(255, 0, 0);
+    position: absolute;
+    // transform: translate(var(--ball-x-position), var(--ball-y-position));
   }
 }
