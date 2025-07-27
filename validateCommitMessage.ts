@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 const commitMsgPath = process.argv[2];
-console.log('🚀 ~ process:', process);
+console.log('🚀 ~ process:', process.argv);
 
 if (!commitMsgPath) {
   console.error('❌ Не указан путь к сообщению коммита.');
