@@ -6,6 +6,7 @@ function MainField() {
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const ballRef = useRef<HTMLDivElement | null>(null);
   const [move, setMove] = useState(false);
+  console.log('🚀 ~ MainField ~ move:', move);
 
   //Координаты и размеры поля - константа
   const [fieldCoords, setFieldCoords] = useState({
