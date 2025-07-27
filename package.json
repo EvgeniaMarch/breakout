@@ -11,11 +11,18 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint --edit $1"
+    }
+  },
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.21.0",
     "@types/node": "^24.1.0",
     "@types/react": "^19.0.10",
