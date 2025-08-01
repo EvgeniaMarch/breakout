@@ -3,6 +3,13 @@ import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
+// - type: один из разрешённых
+// - (scope): опционально
+// - : после типа и области
+// - описание: обязательно, после двоеточия с пробелом
+const conventionalPattern =
+  /^(feat|fix|docs|style|refactor|test|chore|perf)(?:$$([^)]+)$$)?: (.+)$/;
+
 const commitMsgPath = process.argv[2];
 console.log('🚀 ~ process.argv:', process.argv);
 
@@ -33,17 +40,70 @@ try {
   }).trim();
 } catch (err) {
   console.warn('⚠️ Ошибка при определении ветки:', err.message);
-  // Можно попробовать без cwd, или оставить 'unknown'
 }
 console.log(`📌 Текущая ветка: ${currentBranch}`);
 
 let commitMsg = fs.readFileSync(commitMsgPath, 'utf-8').trim();
+// Исправляем сообщение
+let fixedMsg = fixCommitMessage(commitMsg);
 
 if (!commitMsg || commitMsg.length === 0) {
   console.error(
     '❌ Сообщение коммита обязательно! Используйте: git commit -m "ваше сообщение"',
   );
   process.exit(1);
+}
+const match = fixedMsg.match(conventionalPattern);
+console.log('🚀 ~ match:', match);
+
+if (!match) {
+  console.warn(
+    '⚠️  Сообщение не соответствует формату <тип>(<область>): <описание>',
+  );
+  // process.exit(1);
+  // let [_, type, scope, description] = match;
+
+  const allowedTypes = [
+    'feat',
+    'fix',
+    'docs',
+    'style',
+    'refactor',
+    'test',
+    'chore',
+  ];
+  const branchTypeMatch = currentBranch.match(
+    /^(feat|fix|docs|style|refactor|test|chore)\b/,
+  );
+
+  // if (!allowedTypes.includes(type)) {
+  //   console.warn(
+  //     `⚠️  Недопустимый тип коммита: "${type}". Должен быть один из: ${allowedTypes.join(
+  //       ', ',
+  //     )}`,
+  //   );
+  // Извлекаем тип из ветки
+  if (branchTypeMatch) {
+    const branchType = branchTypeMatch[1];
+    console.log(`🔧 Извлечён тип из ветки "${currentBranch}": ${branchType}`);
+
+    // Формируем новое сообщение с правильным типом
+    finalMsg = `${branchType}${scope ? `(${scope})` : ''}: ${description}`;
+
+    console.log(`📝 Автоисправление: "${fixedMsg}" → "${finalMsg}"`);
+  }
+  // }
+  // if (description[0] !== description[0].toLowerCase()) {
+  //   console.warn('⚠️  Описание должно начинаться с маленькой буквы.');
+  //   // process.exit(1);
+  //   finalMsg = commitMsg.charAt(0).toLowerCase() + commitMsg.slice(1);
+  // }
+
+  // if (description.endsWith('.')) {
+  //   console.warn('⚠️  Описание не должно заканчиваться точкой.');
+  //   // process.exit(1);
+  //   finalMsg += '.';
+  // }
 }
 
 // Попытка исправить формат
@@ -67,23 +127,20 @@ function fixCommitMessage(msg) {
   return msg;
 }
 
-// Исправляем сообщение
-let fixedMsg = fixCommitMessage(commitMsg);
-
 // Проверяем минимальную длину
 if (fixedMsg.length < 3) {
   console.error('❌ Сообщение коммита слишком короткое (минимум 3 символа).');
-  fixedMsg += '567';
+  finalMsg += '567';
   // process.exit(1);
 }
 
 // Проверяем, соответствует ли сообщение Conventional Commits
-const conventionalPattern = /^(\w+)(?:$$[^)]+$$)?: .+/;
-if (!conventionalPattern.test(fixedMsg)) {
-  console.warn(
-    '⚠️  Сообщение не соответствует Conventional Commits, но будет принято.',
-  );
-}
+// const conventionalPattern = /^(\w+)(?:$$[^)]+$$)?: .+/;
+// if (!conventionalPattern.test(fixedMsg)) {
+//   console.warn(
+//     '⚠️  Сообщение не соответствует Conventional Commits, но будет принято.',
+//   );
+// }
 // --- Дополнительная логика на основе ветки (пример) ---
 // if (currentBranch.startsWith('fix/') && !fixedMsg.startsWith('fix:')) {
 //   console.error('❌ В ветке fix/* сообщение должно начинаться с "fix:"');
