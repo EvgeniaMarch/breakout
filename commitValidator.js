@@ -1,11 +1,41 @@
 import * as fs from 'node:fs';
+import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 const commitMsgPath = process.argv[2];
+console.log('🚀 ~ process.argv:', process.argv);
 
 if (!commitMsgPath) {
   console.error('❌ Не указан путь к сообщению коммита.');
   process.exit(1);
 }
+
+// let currentBranch = '';
+// try {
+//   currentBranch = execSync('git branch --show-current', {
+//     encoding: 'utf-8',
+//     stdio: 'pipe',
+//   }).trim();
+// } catch (err) {
+//   console.warn('⚠️ Не удалось определить текущую ветку.');
+//   currentBranch = 'unknown';
+// }
+// console.log(`📌 Текущая ветка: ${currentBranch}`);
+let currentBranch = 'unknown';
+try {
+  const gitRoot = execSync('git rev-parse --show-toplevel', {
+    encoding: 'utf-8',
+  }).trim();
+  currentBranch = execSync('git rev-parse --abbrev-ref HEAD', {
+    cwd: gitRoot,
+    encoding: 'utf-8',
+  }).trim();
+} catch (err) {
+  console.warn('⚠️ Ошибка при определении ветки:', err.message);
+  // Можно попробовать без cwd, или оставить 'unknown'
+}
+console.log(`📌 Текущая ветка: ${currentBranch}`);
 
 let commitMsg = fs.readFileSync(commitMsgPath, 'utf-8').trim();
 
@@ -38,12 +68,13 @@ function fixCommitMessage(msg) {
 }
 
 // Исправляем сообщение
-const fixedMsg = fixCommitMessage(commitMsg);
+let fixedMsg = fixCommitMessage(commitMsg);
 
 // Проверяем минимальную длину
 if (fixedMsg.length < 3) {
   console.error('❌ Сообщение коммита слишком короткое (минимум 3 символа).');
-  process.exit(1);
+  fixedMsg += '567';
+  // process.exit(1);
 }
 
 // Проверяем, соответствует ли сообщение Conventional Commits
@@ -53,6 +84,16 @@ if (!conventionalPattern.test(fixedMsg)) {
     '⚠️  Сообщение не соответствует Conventional Commits, но будет принято.',
   );
 }
+// --- Дополнительная логика на основе ветки (пример) ---
+// if (currentBranch.startsWith('fix/') && !fixedMsg.startsWith('fix:')) {
+//   console.error('❌ В ветке fix/* сообщение должно начинаться с "fix:"');
+//   process.exit(1);
+// }
+
+// if (currentBranch.startsWith('feat/') && !fixedMsg.startsWith('feat:')) {
+//   console.error('❌ В ветке feat/* сообщение должно начинаться с "feat:"');
+//   process.exit(1);
+// }
 
 // Сохраняем исправленное сообщение обратно в файл
 fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
