@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 // - : после типа и области
 // - описание: обязательно, после двоеточия с пробелом
 const conventionalPattern =
-  /^(feat|fix|docs|style|refactor|test|chore|perf)(?:$$([^)]+)$$)?: (.+)$/;
+  /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
 
 const commitMsgPath = process.argv[2];
 if (!commitMsgPath) {
@@ -27,68 +27,9 @@ if (!commitMsg || commitMsg.length === 0) {
 }
 const match = commitMsg.match(conventionalPattern);
 console.log('🚀 ~ match:', match);
-
-// if (match) {
-//   let [_, type, scope, description] = match;
-//   const allowedTypes = [
-//     'feat',
-//     'fix',
-//     'docs',
-//     'style',
-//     'refactor',
-//     'test',
-//     'chore',
-//   ];
-//   const currentBranch = getCurrentBranch();
-
-//   const branchTypeMatch = currentBranch.match(
-//     /^(feat|fix|docs|style|refactor|test|chore)\b/,
-//   );
-
-//   if (!allowedTypes.includes(type)) {
-//     console.warn(
-//       `⚠️  Недопустимый тип коммита: "${type}". Должен быть один из: ${allowedTypes.join(
-//         ', ',
-//       )}`,
-//     );
-
-//     // Извлекаем тип из ветки
-//     if (branchTypeMatch) {
-//       const branchType = branchTypeMatch[1];
-//       console.log(`🔧 Извлечён тип из ветки "${currentBranch}": ${branchType}`);
-
-//       // Формируем новое сообщение с правильным типом
-//       finalMsg = `${branchType}${scope ? `(${scope})` : ''}: ${description}`;
-
-//       console.log(`📝 Автоисправление: "${fixedMsg}" → "${finalMsg}"`);
-//     }
-//   }
-//   if (description[0] !== description[0].toLowerCase()) {
-//     console.warn('⚠️  Описание должно начинаться с маленькой буквы.');
-//     // process.exit(1);
-//     finalMsg = commitMsg.charAt(0).toLowerCase() + commitMsg.slice(1);
-//   }
-
-//   if (description.endsWith('.')) {
-//     console.warn('⚠️  Описание не должно заканчиваться точкой.');
-//     // process.exit(1);
-//     finalMsg += '.';
-//   }
-//   console.log(`✅ Сообщение коммита валидно: "${fixedMsg}"`);
-//   process.exit(0);
-// }
-
-function getCurrentBranch() {
-  let currentBranch = '';
-  try {
-    currentBranch = execSync('git branch --show-current', {
-      encoding: 'utf-8',
-      stdio: 'pipe',
-    }).trim();
-  } catch (err) {
-    console.warn('⚠️ Не удалось определить текущую ветку.');
-    currentBranch = 'unknown';
-  }
-  console.log(`📌 Текущая ветка: ${currentBranch}`);
-  return currentBranch;
+if (!match) {
+  console.warn(
+    '⚠️  Сообщение не соответствует формату <тип>(<область>): <описание>',
+  );
+  process.exit(1);
 }
