@@ -43,9 +43,9 @@ if (!match) {
     console.log(
       `🔧 Ветка "${currentBranch}" подсказывает тип: ${commitTypeFromBranch}`,
     );
-    const fixedMsg = `${commitTypeFromBranch}${
+    const fixedMsg = `${commitTypeFromBranch}(${
       scopeFromBranch ? scopeFromBranch : 'common'
-    }: ${commitMsg.trim()}`;
+    }): ${commitMsg.trim()}`;
     fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
     console.log(`✅ Сообщение исправлено: "${fixedMsg}"`);
     process.exit(0);
