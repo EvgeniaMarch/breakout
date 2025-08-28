@@ -24,7 +24,7 @@ if (!commitMsg || commitMsg.length === 0) {
   process.exit(1);
 }
 const match = commitMsg.match(conventionalPattern);
-console.log('🚀 ~ match:', match);
+console.log('🚀 ~ match:-1', match);
 const currentBranch = getCurrentBranch();
 const commitTypeFromBranch = getTypeFromBranch(currentBranch);
 const scopeFromBranch = getScopeFromBranch(currentBranch);
