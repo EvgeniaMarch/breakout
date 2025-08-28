@@ -9,6 +9,7 @@ if (!commitMsgPath) {
 }
 
 const commitMsg = fs.readFileSync(commitMsgPath, 'utf-8').trim();
+console.log('🚀 ~ commitMsg:', commitMsg);
 
 if (!commitMsg || commitMsg.length === 0) {
   console.error(
