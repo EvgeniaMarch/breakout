@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import { execSync } from 'node:child_process';
+import { select } from '@inquirer/prompts';
 
 // - type: один из разрешённых
 // - (scope): опционально
@@ -10,6 +11,63 @@ const conventionalPattern =
 console.error('🔍 getValidateCommitMessage.js: запущен-1');
 
 console.error('📄 Путь к файлу:', process.argv[2]);
+const answer = await select({
+  message: 'Select a package manager',
+  choices: [
+    {
+      name: 'build',
+      value: 'build',
+      description: 'Build project or external dependencies changes',
+    },
+    {
+      name: 'ci',
+      value: 'ci',
+      description: 'CI configuration and scripts work',
+    },
+    // new Separator(),
+    {
+      name: 'docs',
+      value: 'docs',
+      description: 'Documentation updates',
+    },
+    {
+      name: 'feat',
+      value: 'feat',
+      description: 'Adding new functionality',
+    },
+    {
+      name: 'fix',
+      value: 'fix',
+      description: 'Bug fixes',
+    },
+    {
+      name: 'perf',
+      value: 'perf',
+      description: 'Performance improvements',
+    },
+    {
+      name: 'refactor',
+      value: 'refactor',
+      description: 'Code changes without fixing bugs or adding new features',
+    },
+    {
+      name: 'revert',
+      value: 'revert',
+      description: 'Revert to previous commits',
+    },
+    {
+      name: 'style',
+      value: 'style',
+      description: 'Code style fixes (tabs, indents, dots, commas, etc.)',
+    },
+    {
+      name: 'test',
+      value: 'test',
+      description: 'Adding tests',
+    },
+  ],
+});
+console.log('🚀 ~ answer:', answer);
 
 const commitMsgPath = process.argv[2];
 console.log('🚀 ~ commitMsgPath:', commitMsgPath);
