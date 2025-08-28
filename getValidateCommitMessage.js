@@ -10,64 +10,85 @@ const conventionalPattern =
   /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
 console.error('🔍 getValidateCommitMessage.js: запущен-1');
 
+const args = process.argv.slice(2);
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`
+Usage: git commit -m "<message>"
+  
+Allowed types:
+  feat     - Adding new functionality
+  fix      - Bug fixes  
+  docs     - Documentation updates
+  style    - Code style fixes
+  refactor - Code refactoring
+  test     - Adding tests
+  chore    - Maintenance tasks
+  perf     - Performance improvements
+
+Format: <type>(<scope>): <description>
+Example: feat(auth): add login functionality
+  `);
+  process.exit(0);
+}
+
 console.error('📄 Путь к файлу:', process.argv[2]);
-const answer = await select({
-  message: 'Select a package manager',
-  choices: [
-    {
-      name: 'build',
-      value: 'build',
-      description: 'Build project or external dependencies changes',
-    },
-    {
-      name: 'ci',
-      value: 'ci',
-      description: 'CI configuration and scripts work',
-    },
-    // new Separator(),
-    {
-      name: 'docs',
-      value: 'docs',
-      description: 'Documentation updates',
-    },
-    {
-      name: 'feat',
-      value: 'feat',
-      description: 'Adding new functionality',
-    },
-    {
-      name: 'fix',
-      value: 'fix',
-      description: 'Bug fixes',
-    },
-    {
-      name: 'perf',
-      value: 'perf',
-      description: 'Performance improvements',
-    },
-    {
-      name: 'refactor',
-      value: 'refactor',
-      description: 'Code changes without fixing bugs or adding new features',
-    },
-    {
-      name: 'revert',
-      value: 'revert',
-      description: 'Revert to previous commits',
-    },
-    {
-      name: 'style',
-      value: 'style',
-      description: 'Code style fixes (tabs, indents, dots, commas, etc.)',
-    },
-    {
-      name: 'test',
-      value: 'test',
-      description: 'Adding tests',
-    },
-  ],
-});
-console.log('🚀 ~ answer:', answer);
+// const answer = await select({
+//   message: 'Select a package manager',
+//   choices: [
+//     {
+//       name: 'build',
+//       value: 'build',
+//       description: 'Build project or external dependencies changes',
+//     },
+//     {
+//       name: 'ci',
+//       value: 'ci',
+//       description: 'CI configuration and scripts work',
+//     },
+//     // new Separator(),
+//     {
+//       name: 'docs',
+//       value: 'docs',
+//       description: 'Documentation updates',
+//     },
+//     {
+//       name: 'feat',
+//       value: 'feat',
+//       description: 'Adding new functionality',
+//     },
+//     {
+//       name: 'fix',
+//       value: 'fix',
+//       description: 'Bug fixes',
+//     },
+//     {
+//       name: 'perf',
+//       value: 'perf',
+//       description: 'Performance improvements',
+//     },
+//     {
+//       name: 'refactor',
+//       value: 'refactor',
+//       description: 'Code changes without fixing bugs or adding new features',
+//     },
+//     {
+//       name: 'revert',
+//       value: 'revert',
+//       description: 'Revert to previous commits',
+//     },
+//     {
+//       name: 'style',
+//       value: 'style',
+//       description: 'Code style fixes (tabs, indents, dots, commas, etc.)',
+//     },
+//     {
+//       name: 'test',
+//       value: 'test',
+//       description: 'Adding tests',
+//     },
+//   ],
+// });
+// console.log('🚀 ~ answer:', answer);
 
 const commitMsgPath = process.argv[2];
 console.log('🚀 ~ commitMsgPath:', commitMsgPath);
