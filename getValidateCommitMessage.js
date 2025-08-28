@@ -7,7 +7,8 @@ import { execSync } from 'node:child_process';
 // - описание: обязательно, после двоеточия с пробелом
 const conventionalPattern =
   /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
-
+console.error('🔍 getValidateCommitMessage.js: запущен');
+console.error('📄 Путь к файлу:', process.argv[2]);
 const commitMsgPath = process.argv[2];
 console.log('🚀 ~ commitMsgPath:', commitMsgPath);
 if (!commitMsgPath) {
@@ -29,7 +30,10 @@ console.log('🚀 ~ match:-1', match);
 const currentBranch = getCurrentBranch();
 const commitTypeFromBranch = getTypeFromBranch(currentBranch);
 const scopeFromBranch = getScopeFromBranch(currentBranch);
-// const fixedMsg = `${commitTypeFromBranch}${scope ? `(${scope})` : ''}: ${description}`;
+const fixedMsg = `${commitTypeFromBranch}${
+  scope ? `(${scope})` : ''
+}: ${description}`;
+console.log('🚀 ~ fixedMsg:', fixedMsg);
 const allowedTypes = [
   'feat',
   'fix',
@@ -73,6 +77,7 @@ if (!match) {
       const fixedMsg = `${commitTypeFromBranch}${
         finalScope ? `(${finalScope})` : ''
       }: ${description}`;
+
       fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
       console.log(`✅ Исправлено: "${commitMsg}" → "${fixedMsg}"`);
       process.exit(0);
