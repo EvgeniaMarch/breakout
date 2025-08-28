@@ -32,10 +32,10 @@ console.log('🚀 ~ match:-1', match);
 const currentBranch = getCurrentBranch();
 const commitTypeFromBranch = getTypeFromBranch(currentBranch);
 const scopeFromBranch = getScopeFromBranch(currentBranch);
-const fixedMsg = `${commitTypeFromBranch}${
-  scope ? `(${scope})` : ''
-}: ${description}`;
-console.log('🚀 ~ fixedMsg:', fixedMsg);
+// const fixedMsg = `${commitTypeFromBranch}${
+//   scope ? `(${scope})` : ''
+// }: ${description}`;
+// console.log('🚀 ~ fixedMsg:', fixedMsg);
 const allowedTypes = [
   'feat',
   'fix',
