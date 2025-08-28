@@ -7,7 +7,7 @@ import { execSync } from 'node:child_process';
 // - описание: обязательно, после двоеточия с пробелом
 const conventionalPattern =
   /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
-console.error('🔍 getValidateCommitMessage.js: запущен');
+console.error('🔍 getValidateCommitMessage.js: запущен-1');
 
 console.error('📄 Путь к файлу:', process.argv[2]);
 
