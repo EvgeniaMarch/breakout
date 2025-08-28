@@ -9,7 +9,6 @@ const conventionalPattern =
   /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
 
 const commitMsgPath = process.argv[2];
-console.log('🚀 ~ commitMsgPath:', commitMsgPath);
 if (!commitMsgPath) {
   console.error('❌ Не указан путь к сообщению коммита.');
   process.exit(1);
