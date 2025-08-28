@@ -8,7 +8,9 @@ import { execSync } from 'node:child_process';
 const conventionalPattern =
   /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
 console.error('🔍 getValidateCommitMessage.js: запущен');
+
 console.error('📄 Путь к файлу:', process.argv[2]);
+
 const commitMsgPath = process.argv[2];
 console.log('🚀 ~ commitMsgPath:', commitMsgPath);
 if (!commitMsgPath) {
