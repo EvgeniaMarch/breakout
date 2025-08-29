@@ -171,9 +171,9 @@ async function validateCommitMessage() {
         console.error(
           '❌ Ошибка при интерактивном выборе, используем значение по умолчанию',
         );
-        const fixedMsg = `chore(common): ${commitMsg.trim()}`;
-        fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
-        console.log(`✅ Использовано значение по умолчанию: "${fixedMsg}"`);
+        // const fixedMsg = `chore(common): ${commitMsg.trim()}`;
+        // fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
+        // console.log(`✅ Использовано значение по умолчанию: "${fixedMsg}"`);
         process.exit(0);
       }
     }
