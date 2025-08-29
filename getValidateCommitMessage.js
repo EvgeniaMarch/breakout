@@ -126,56 +126,57 @@ async function validateCommitMessage() {
       console.error(
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату.',
       );
+      process.exit(0);
 
-      try {
-        // Перенаправляем stdin для интерактивности
-        process.stdin.resume();
-        process.stdin.setEncoding('utf8');
+      // try {
+      //   // Перенаправляем stdin для интерактивности
+      //   process.stdin.resume();
+      //   process.stdin.setEncoding('utf8');
 
-        const selectedType = await select({
-          message: 'Выберите тип коммита:',
-          choices: [
-            { name: 'feat - Новая функциональность', value: 'feat' },
-            { name: 'fix - Исправление ошибок', value: 'fix' },
-            { name: 'docs - Документация', value: 'docs' },
-            { name: 'style - Стиль кода', value: 'style' },
-            { name: 'refactor - Рефакторинг', value: 'refactor' },
-            { name: 'test - Тесты', value: 'test' },
-            { name: 'chore - Вспомогательные задачи', value: 'chore' },
-            { name: 'perf - Производительность', value: 'perf' },
-          ],
-        });
+      //   const selectedType = await select({
+      //     message: 'Выберите тип коммита:',
+      //     choices: [
+      //       { name: 'feat - Новая функциональность', value: 'feat' },
+      //       { name: 'fix - Исправление ошибок', value: 'fix' },
+      //       { name: 'docs - Документация', value: 'docs' },
+      //       { name: 'style - Стиль кода', value: 'style' },
+      //       { name: 'refactor - Рефакторинг', value: 'refactor' },
+      //       { name: 'test - Тесты', value: 'test' },
+      //       { name: 'chore - Вспомогательные задачи', value: 'chore' },
+      //       { name: 'perf - Производительность', value: 'perf' },
+      //     ],
+      //   });
 
-        const selectedScope = await input({
-          message:
-            'Введите область (scope) или нажмите Enter чтобы пропустить:',
-          default: scopeFromBranch || 'common',
-        });
+      //   const selectedScope = await input({
+      //     message:
+      //       'Введите область (scope) или нажмите Enter чтобы пропустить:',
+      //     default: scopeFromBranch || 'common',
+      //   });
 
-        const description = await input({
-          message: 'Введите описание коммита:',
-          default: commitMsg.trim(),
-          validate: (value) =>
-            value.length > 0 ? true : 'Описание не может быть пустым',
-        });
+      //   const description = await input({
+      //     message: 'Введите описание коммита:',
+      //     default: commitMsg.trim(),
+      //     validate: (value) =>
+      //       value.length > 0 ? true : 'Описание не может быть пустым',
+      //   });
 
-        const finalScope = selectedScope.trim()
-          ? `(${selectedScope.trim()})`
-          : '';
-        const fixedMsg = `${selectedType}${finalScope}: ${description.trim()}`;
+      //   const finalScope = selectedScope.trim()
+      //     ? `(${selectedScope.trim()})`
+      //     : '';
+      //   const fixedMsg = `${selectedType}${finalScope}: ${description.trim()}`;
 
-        fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
-        console.log(`✅ Сообщение создано: "${fixedMsg}"`);
-        process.exit(0);
-      } catch (error) {
-        console.error(
-          '❌ Ошибка при интерактивном выборе, используем значение по умолчанию',
-        );
-        // const fixedMsg = `chore(common): ${commitMsg.trim()}`;
-        // fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
-        // console.log(`✅ Использовано значение по умолчанию: "${fixedMsg}"`);
-        process.exit(0);
-      }
+      //   fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
+      //   console.log(`✅ Сообщение создано: "${fixedMsg}"`);
+      //   process.exit(0);
+      // } catch (error) {
+      //   console.error(
+      //     '❌ Ошибка при интерактивном выборе, используем значение по умолчанию',
+      //   );
+      //   // const fixedMsg = `chore(common): ${commitMsg.trim()}`;
+      //   // fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
+      //   // console.log(`✅ Использовано значение по умолчанию: "${fixedMsg}"`);
+      //   process.exit(1);
+      // }
     }
   }
 }
