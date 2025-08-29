@@ -112,7 +112,7 @@ const allowedTypes = [
 //   }
 // }
 
-async function validateCommitMessage() {
+function validateCommitMessage() {
   if (!match) {
     if (commitTypeFromBranch) {
       const fixedMsg = `${commitTypeFromBranch}(${
@@ -125,48 +125,18 @@ async function validateCommitMessage() {
       console.error(
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату.',
       );
+      console.error('📝 Формат: <тип>(<область>): <описание>');
+      console.error('🎯 Пример: feat(auth): add login functionality');
+      console.error('💡 Доступные типы:', allowedTypes.join(', '));
 
-      // Интерактивный выбор типа и scope
-      try {
-        const selectedType = await select({
-          message: 'Выберите тип коммита:',
-          choices: [
-            { name: 'feat - Новая функциональность', value: 'feat' },
-            { name: 'fix - Исправление ошибок', value: 'fix' },
-            { name: 'docs - Документация', value: 'docs' },
-            { name: 'style - Стиль кода', value: 'style' },
-            { name: 'refactor - Рефакторинг', value: 'refactor' },
-            { name: 'test - Тесты', value: 'test' },
-            { name: 'chore - Вспомогательные задачи', value: 'chore' },
-            { name: 'perf - Производительность', value: 'perf' },
-          ],
-        });
+      // Генерируем сообщение с типом по умолчанию
+      const defaultType = 'chore';
+      const defaultScope = scopeFromBranch || 'common';
+      const fixedMsg = `${defaultType}(${defaultScope}): ${commitMsg.trim()}`;
 
-        const selectedScope = await input({
-          message:
-            'Введите область (scope) или нажмите Enter чтобы пропустить:',
-          default: scopeFromBranch || 'common',
-        });
-
-        const description = await input({
-          message: 'Введите описание коммита:',
-          default: commitMsg.trim(),
-          validate: (value) =>
-            value.length > 0 ? true : 'Описание не может быть пустым',
-        });
-
-        const finalScope = selectedScope.trim()
-          ? `(${selectedScope.trim()})`
-          : '';
-        const fixedMsg = `${selectedType}${finalScope}: ${description.trim()}`;
-
-        fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
-        console.log(`✅ Сообщение создано: "${fixedMsg}"`);
-        process.exit(0);
-      } catch (error) {
-        console.error('❌ Ошибка при интерактивном выборе:', error.message);
-        process.exit(1);
-      }
+      fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
+      console.log(`✅ Использован тип по умолчанию: "${fixedMsg}"`);
+      process.exit(0);
     }
   } else {
     const [_, type, scope, description] = match;
@@ -190,42 +160,19 @@ async function validateCommitMessage() {
           '❌ Недопустимый тип и не удалось определить тип из ветки.',
         );
 
-        // Интерактивный выбор для недопустимого типа
-        try {
-          const selectedType = await select({
-            message: 'Выберите правильный тип коммита:',
-            choices: [
-              { name: 'feat - Новая функциональность', value: 'feat' },
-              { name: 'fix - Исправление ошибок', value: 'fix' },
-              { name: 'docs - Документация', value: 'docs' },
-              { name: 'style - Стиль кода', value: 'style' },
-              { name: 'refactor - Рефакторинг', value: 'refactor' },
-              { name: 'test - Тесты', value: 'test' },
-              { name: 'chore - Вспомогательные задачи', value: 'chore' },
-              { name: 'perf - Производительность', value: 'perf' },
-            ],
-          });
-
-          const fixedMsg = `${selectedType}${
-            scope ? `(${scope})` : ''
-          }: ${description}`;
-          fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
-          console.log(`✅ Исправлено: "${commitMsg}" → "${fixedMsg}"`);
-          process.exit(0);
-        } catch (error) {
-          console.error('❌ Ошибка при интерактивном выборе:', error.message);
-          process.exit(1);
-        }
+        // Заменяем недопустимый тип на fix по умолчанию
+        const fixedMsg = `fix${scope ? `(${scope})` : ''}: ${description}`;
+        fs.writeFileSync(commitMsgPath, fixedMsg, 'utf-8');
+        console.log(
+          `✅ Исправлен недопустимый тип: "${commitMsg}" → "${fixedMsg}"`,
+        );
+        process.exit(0);
       }
     }
   }
 }
 
-// Запускаем асинхронную валидацию
-validateCommitMessage().catch((error) => {
-  console.error('❌ Неожиданная ошибка:', error);
-  process.exit(1);
-});
+validateCommitMessage();
 
 function getCurrentBranch() {
   let currentBranch = '';
