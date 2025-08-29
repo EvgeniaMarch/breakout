@@ -126,7 +126,7 @@ async function validateCommitMessage() {
       console.error(
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату.',
       );
-      process.exit(0);
+      process.exit(1);
 
       // try {
       //   // Перенаправляем stdin для интерактивности
