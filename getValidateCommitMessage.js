@@ -122,50 +122,29 @@ async function validateCommitMessage() {
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату. Введите валидное сообщение в формате <тип>(<область>): <описание>. Или запустите `npm run commit` ',
       );
       // process.exit(1);
+
       try {
-        const { execSync } = await import('child_process');
+        const { execFileSync } = await import('child_process');
 
-        // 1. Сначала отменяем текущий коммит
-        execSync('git reset --mixed HEAD', {
+        // Отменяем коммит
+        execFileSync('git', ['reset', '--mixed', 'HEAD'], {
           stdio: 'inherit',
-          cwd: process.cwd(),
         });
 
-        // 2. Запускаем интерактивный коммит
-        execSync('npm run commit', {
+        // Запускаем интерактивный коммит
+        execFileSync('npm', ['run', 'commit'], {
           stdio: 'inherit',
-          cwd: process.cwd(),
         });
 
-        // 3. Выходим успешно
         // process.exit(0);
       } catch (error) {
-        console.log('🚀 ~ validateCommitMessage ~ error:', error);
-        console.error('\n❌ Создание коммита прервано');
+        if (error.signal === 'SIGINT') {
+          console.log('❌ Создание коммита отменено');
+        } else {
+          console.error('❌ Ошибка:', error.message);
+        }
         // process.exit(1);
       }
-      // try {
-      //   const { execFileSync } = await import('child_process');
-
-      //   // Отменяем коммит
-      //   execFileSync('git', ['reset', '--mixed', 'HEAD'], {
-      //     stdio: 'inherit',
-      //   });
-
-      //   // Запускаем интерактивный коммит
-      //   execFileSync('npm', ['run', 'commit'], {
-      //     stdio: 'inherit',
-      //   });
-
-      //   process.exit(0);
-      // } catch (error) {
-      //   if (error.signal === 'SIGINT') {
-      //     console.log('❌ Создание коммита отменено');
-      //   } else {
-      //     console.error('❌ Ошибка:', error.message);
-      //   }
-      //   process.exit(1);
-      // }
 
       // try {
       //   // Перенаправляем stdin для интерактивности
