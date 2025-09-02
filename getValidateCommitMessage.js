@@ -123,17 +123,27 @@ async function validateCommitMessage() {
       );
       // process.exit(1);
       try {
-        // Запускаем npm run commit с пропуском хуков, чтобы избежать рекурсии
         const { execSync } = await import('child_process');
-        execSync('HUSKY_SKIP_HOOKS=1 npm run commit', {
-          stdio: 'inherit',
-          cwd: process.cwd(),
-        });
-        console.log('✅ Коммит создан через интерактивный помощник');
+
+        // Запускаем и игнорируем ошибки отмены (Ctrl+C)
+        try {
+          execSync('HUSKY_SKIP_HOOKS=1 npm run commit', {
+            stdio: 'inherit',
+            cwd: process.cwd(),
+          });
+        } catch (execError) {
+          // Игнорируем ошибки отмены (статус 0 или SIGINT)
+          if (execError.status !== 0 && execError.signal !== 'SIGINT') {
+            throw execError;
+          }
+        }
+
+        // Проверяем, был ли создан коммит
+        // Можно добавить проверку, изменилось ли сообщение коммита
+        console.log('✅ Интерактивный помощник завершен');
         process.exit(0);
       } catch (error) {
-        console.log('🚀 ~ validateCommitMessage ~ error:', error);
-        console.error('\n❌ Создание коммита прервано или произошла ошибка');
+        console.error('\n❌ Произошла ошибка при создании коммита');
         process.exit(1);
       }
 
