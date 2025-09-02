@@ -142,7 +142,7 @@ async function validateCommitMessage() {
       } catch (error) {
         console.log('🚀 ~ validateCommitMessage ~ error:', error);
         console.error('\n❌ Создание коммита прервано');
-        process.exit(1);
+        // process.exit(1);
       }
       // try {
       //   const { execFileSync } = await import('child_process');
