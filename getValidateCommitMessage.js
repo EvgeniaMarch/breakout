@@ -123,28 +123,28 @@ async function validateCommitMessage() {
       );
       // process.exit(1);
 
-      try {
-        const { execFileSync } = await import('child_process');
+      // try {
+      //   const { execFileSync } = await import('child_process');
 
-        // Отменяем коммит
-        execFileSync('git', ['reset', '--mixed', 'HEAD'], {
-          stdio: 'inherit',
-        });
+      //   // Отменяем коммит
+      //   execFileSync('git', ['reset', '--mixed', 'HEAD'], {
+      //     stdio: 'inherit',
+      //   });
 
-        // Запускаем интерактивный коммит
-        execFileSync('npm', ['run', 'commit'], {
-          stdio: 'inherit',
-        });
+      //   // Запускаем интерактивный коммит
+      //   execFileSync('npm', ['run', 'commit'], {
+      //     stdio: 'inherit',
+      //   });
 
-        // process.exit(0);
-      } catch (error) {
-        if (error.signal === 'SIGINT') {
-          console.log('❌ Создание коммита отменено');
-        } else {
-          console.error('❌ Ошибка:', error.message);
-        }
-        // process.exit(1);
-      }
+      //   // process.exit(0);
+      // } catch (error) {
+      //   if (error.signal === 'SIGINT') {
+      //     console.log('❌ Создание коммита отменено');
+      //   } else {
+      //     console.error('❌ Ошибка:', error.message);
+      //   }
+      //   // process.exit(1);
+      // }
 
       // try {
       //   // Перенаправляем stdin для интерактивности
