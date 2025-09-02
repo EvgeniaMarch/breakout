@@ -121,7 +121,29 @@ async function validateCommitMessage() {
       console.error(
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату. Введите валидное сообщение в формате <тип>(<область>): <описание>. Или запустите `npm run commit` ',
       );
-      process.exit(1);
+      // process.exit(1);
+      try {
+        const { execSync } = await import('child_process');
+
+        // 1. Сначала отменяем текущий коммит
+        execSync('git reset --mixed HEAD', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
+
+        // 2. Запускаем интерактивный коммит
+        execSync('npm run commit', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
+
+        // 3. Выходим успешно
+        // process.exit(0);
+      } catch (error) {
+        console.log('🚀 ~ validateCommitMessage ~ error:', error);
+        console.error('\n❌ Создание коммита прервано');
+        process.exit(1);
+      }
       // try {
       //   const { execFileSync } = await import('child_process');
 
