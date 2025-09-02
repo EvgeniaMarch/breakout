@@ -123,24 +123,25 @@ async function validateCommitMessage() {
       );
       // process.exit(1);
       try {
-        const { execSync } = await import('child_process');
+        const { execFileSync } = await import('child_process');
 
-        // 1. Сначала отменяем текущий коммит
-        execSync('git reset --mixed HEAD', {
+        // Отменяем коммит
+        execFileSync('git', ['reset', '--mixed', 'HEAD'], {
           stdio: 'inherit',
-          cwd: process.cwd(),
         });
 
-        // 2. Запускаем интерактивный коммит
-        execSync('npm run commit', {
+        // Запускаем интерактивный коммит
+        execFileSync('npm', ['run', 'commit'], {
           stdio: 'inherit',
-          cwd: process.cwd(),
         });
 
-        // 3. Выходим успешно
         process.exit(0);
       } catch (error) {
-        console.error('\n❌ Создание коммита прервано');
+        if (error.signal === 'SIGINT') {
+          console.log('❌ Создание коммита отменено');
+        } else {
+          console.error('❌ Ошибка:', error.message);
+        }
         process.exit(1);
       }
 
