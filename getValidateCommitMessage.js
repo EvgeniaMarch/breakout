@@ -1,6 +1,5 @@
 import * as fs from 'node:fs';
 import { execSync } from 'node:child_process';
-import { select } from '@inquirer/prompts';
 
 // - type: один из разрешённых
 // - (scope): опционально
@@ -8,9 +7,9 @@ import { select } from '@inquirer/prompts';
 // - описание: обязательно, после двоеточия с пробелом
 const conventionalPattern =
   /^(feat|fix|docs|style|refactor|test|chore|perf)(?:\(([^)]+)\))?: (.+)$/;
-console.error('🔍 getValidateCommitMessage.js: запущен-1');
 
 const args = process.argv.slice(2);
+console.log('🚀 ~ args:', args);
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
 Usage: git commit -m "<message>"
@@ -31,10 +30,7 @@ Example: feat(auth): add login functionality
   process.exit(0);
 }
 
-console.error('📄 Путь к файлу:', process.argv[2]);
-
 const commitMsgPath = process.argv[2];
-console.log('🚀 ~ commitMsgPath:', commitMsgPath);
 if (!commitMsgPath) {
   console.error('❌ Не указан путь к сообщению коммита.');
   process.exit(1);
@@ -50,7 +46,6 @@ if (!commitMsg || commitMsg.length === 0) {
   process.exit(1);
 }
 const match = commitMsg.match(conventionalPattern);
-console.log('🚀 ~ match:-1', match);
 const currentBranch = getCurrentBranch();
 const commitTypeFromBranch = getTypeFromBranch(currentBranch);
 const scopeFromBranch = getScopeFromBranch(currentBranch);
@@ -126,7 +121,21 @@ async function validateCommitMessage() {
       console.error(
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату. Введите валидное сообщение в формате <тип>(<область>): <описание>. Или запустите `npm run commit` ',
       );
-      process.exit(1);
+      // process.exit(1);
+      try {
+        // Запускаем npm run commit с пропуском хуков, чтобы избежать рекурсии
+        const { execSync } = await import('child_process');
+        execSync('HUSKY_SKIP_HOOKS=1 npm run commit', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
+        console.log('✅ Коммит создан через интерактивный помощник');
+        process.exit(0);
+      } catch (error) {
+        console.log('🚀 ~ validateCommitMessage ~ error:', error);
+        console.error('\n❌ Создание коммита прервано или произошла ошибка');
+        process.exit(1);
+      }
 
       // try {
       //   // Перенаправляем stdin для интерактивности
