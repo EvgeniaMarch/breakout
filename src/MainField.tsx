@@ -165,30 +165,31 @@ function MainField() {
           paltformCoords.x + paltformCoords.width / 2 < fieldCoords.width / 2 &&
           ballX < rightFieldCoord
         ) {
-          deltaX = 2;
-          deltaY = -2;
+          deltaX = 1;
+          deltaY = -1;
         }
         if (
           ballY === 630 &&
           paltformCoords.x + paltformCoords.width / 2 > fieldCoords.width / 2
         ) {
-          deltaX = -2;
-          deltaY = -2;
+          deltaX = -1;
+          deltaY = -1;
         }
 
         if (ballX < leftFieldCoord) {
-          console.log(1);
-          deltaX = 2;
-          deltaY = 2;
+          // console.log(1);
+          deltaX = 1;
+          deltaY = 1;
         }
         if (ballX > rightFieldCoord) {
-          deltaX = -2;
-          deltaY = -2;
+          deltaX = -1;
+          deltaY = -1;
         }
 
         if (ballRect) {
-          console.log(ballX, fieldRect?.x);
+          // console.log(ballX, fieldRect?.x);
 
+          console.log('🚀 ~ ballMoving ~ deltaX:', deltaX);
           setBallCoords((p) => ({
             ...p,
             x: p.x + deltaX,
@@ -220,18 +221,18 @@ function MainField() {
     paltformCoords.x,
   ]);
 
-  useEffect(() => {
-    console.log('🚀 ~ useEffect ~ fieldRect?.x:', fieldRect?.x);
-    if (ballCoords.x === fieldRect?.x) {
-      console.log(1);
+  // useEffect(() => {
+  //   // console.log('🚀 ~ useEffect ~ fieldRect?.x:', fieldRect?.x);
+  //   if (ballCoords.x === fieldRect?.x) {
+  //     // console.log(1);
 
-      setBallCoords((p) => ({
-        ...p,
-        x: p.x + 4,
-        y: p.y,
-      }));
-    }
-  }, [ballCoords.x, fieldRect?.x]);
+  //     setBallCoords((p) => ({
+  //       ...p,
+  //       x: p.x + 1,
+  //       y: p.y,
+  //     }));
+  //   }
+  // }, [ballCoords.x, fieldRect?.x]);
 
   return (
     <div

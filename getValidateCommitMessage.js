@@ -121,7 +121,7 @@ async function validateCommitMessage() {
       console.error(
         '❌ Не удалось определить тип из ветки и сообщение не соответствует формату. Введите валидное сообщение в формате <тип>(<область>): <описание>. Или запустите `npm run commit` ',
       );
-      // process.exit(1);
+      process.exit(1);
 
       // try {
       //   const { execFileSync } = await import('child_process');
