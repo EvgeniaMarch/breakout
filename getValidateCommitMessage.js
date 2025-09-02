@@ -125,25 +125,22 @@ async function validateCommitMessage() {
       try {
         const { execSync } = await import('child_process');
 
-        // Запускаем и игнорируем ошибки отмены (Ctrl+C)
-        try {
-          execSync('HUSKY_SKIP_HOOKS=1 npm run commit', {
-            stdio: 'inherit',
-            cwd: process.cwd(),
-          });
-        } catch (execError) {
-          // Игнорируем ошибки отмены (статус 0 или SIGINT)
-          if (execError.status !== 0 && execError.signal !== 'SIGINT') {
-            throw execError;
-          }
-        }
+        // 1. Сначала отменяем текущий коммит
+        execSync('git reset --mixed HEAD', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
 
-        // Проверяем, был ли создан коммит
-        // Можно добавить проверку, изменилось ли сообщение коммита
-        console.log('✅ Интерактивный помощник завершен');
+        // 2. Запускаем интерактивный коммит
+        execSync('npm run commit', {
+          stdio: 'inherit',
+          cwd: process.cwd(),
+        });
+
+        // 3. Выходим успешно
         process.exit(0);
       } catch (error) {
-        console.error('\n❌ Произошла ошибка при создании коммита');
+        console.error('\n❌ Создание коммита прервано');
         process.exit(1);
       }
 
