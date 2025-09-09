@@ -6,7 +6,7 @@ function MainField() {
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const ballRef = useRef<HTMLDivElement | null>(null);
   const [move, setMove] = useState(false);
-  console.log('🚀 ~ MainField ~ move:', move);
+  // console.log('🚀 ~ MainField ~ move:', move);
 
   //Координаты и размеры поля - константа
   const [fieldCoords, setFieldCoords] = useState({
@@ -150,9 +150,14 @@ function MainField() {
   // Список логических игр. Играть. Вырабатывать новую привычку
   useEffect(() => {
     const ballX = ballCoords.x;
+    // console.log('🚀 ~ MainField ~ ballX:', ballX);
     const ballY = ballCoords.y;
+    // console.log('🚀 ~ MainField ~ ballY:', ballY);
     const leftFieldCoord = fieldRect?.x;
+    // console.log('🚀 ~ MainField ~ fieldRect:', fieldRect);
+    // console.log('🚀 ~ MainField ~ leftFieldCoord:', leftFieldCoord);
     const rightFieldCoord = leftFieldCoord + fieldCoords.width;
+    // console.log('🚀 ~ MainField ~ rightFieldCoord:', rightFieldCoord);
     if (move) {
       // delta - количество мс, прошедшее с предыдущего кадра
       // const delta = 1000;
@@ -160,36 +165,64 @@ function MainField() {
         const ballRect = ballRef.current?.getBoundingClientRect();
         let deltaY: number = 0;
         let deltaX: number = 0;
+        // if (ballX > rightFieldCoord) {
+        //   deltaX = 0;
+        //   deltaY = 0;
+        //   setMove(false);
+        //   console.log('ballX > rightFieldCoord');
+        if (ballY <= fieldRect?.y) {
+          deltaY = 1;
+        }
+        if (ballY >= fieldRect?.y + fieldCoords.height) {
+          deltaY = -1;
+        }
+        // }
+        // console.log('🚀 ~ ballMoving ~ paltformCoords:', paltformCoords);
         if (
           ballY === 630 &&
           paltformCoords.x + paltformCoords.width / 2 < fieldCoords.width / 2 &&
           ballX < rightFieldCoord
         ) {
+          // console.log('1');
+
           deltaX = 1;
           deltaY = -1;
         }
         if (
           ballY === 630 &&
-          paltformCoords.x + paltformCoords.width / 2 > fieldCoords.width / 2
+          paltformCoords.x + paltformCoords.width / 2 > fieldCoords.width / 2 &&
+          ballX >= leftFieldCoord
         ) {
-          deltaX = -1;
-          deltaY = -1;
-        }
+          // console.log('2');
 
-        if (ballX < leftFieldCoord) {
-          // console.log(1);
-          deltaX = 1;
-          deltaY = 1;
-        }
-        if (ballX > rightFieldCoord) {
           deltaX = -1;
           deltaY = -1;
+        }
+        // if (
+        //   ballY === 630 &&
+        //   ballX > paltformCoords.x &&
+        //   ballX < paltformCoords.x + paltformCoords.width
+        // ) {
+        //   // console.log('Мяч попал в платформу');
+
+        //   deltaY = -1;
+        // }
+
+        if (ballX <= leftFieldCoord) {
+          console.log({ leftFieldCoord, ballX });
+          deltaX = 1;
+          // deltaY = 1;
+        }
+        if (ballX >= rightFieldCoord) {
+          // console.log('4');
+
+          deltaX = -1;
+          // deltaY = -1;
         }
 
         if (ballRect) {
           // console.log(ballX, fieldRect?.x);
-
-          console.log('🚀 ~ ballMoving ~ deltaX:', deltaX);
+          // console.log('🚀 ~ ballMoving ~ deltaX:', deltaX);
           setBallCoords((p) => ({
             ...p,
             x: p.x + deltaX,
@@ -215,6 +248,7 @@ function MainField() {
     ballCoords.x,
     ballCoords.y,
     fieldCoords.width,
+    fieldRect,
     fieldRect?.x,
     move,
     paltformCoords.width,
