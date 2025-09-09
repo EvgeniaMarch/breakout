@@ -157,7 +157,7 @@ function MainField() {
     // console.log('🚀 ~ MainField ~ fieldRect:', fieldRect);
     // console.log('🚀 ~ MainField ~ leftFieldCoord:', leftFieldCoord);
     const rightFieldCoord = leftFieldCoord + fieldCoords.width;
-    // console.log('🚀 ~ MainField ~ rightFieldCoord:', rightFieldCoord);
+    console.log('🚀 ~ MainField ~ rightFieldCoord:', rightFieldCoord);
     if (move) {
       // delta - количество мс, прошедшее с предыдущего кадра
       // const delta = 1000;
