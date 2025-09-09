@@ -235,6 +235,7 @@ function getTypeFromBranch(branchName) {
       branchName.startsWith(branchPrefix + '/') ||
       branchName === branchPrefix
     ) {
+      console.log('🚀 ~ getTypeFromBranch ~ commitType:', commitType);
       return commitType;
     }
   }

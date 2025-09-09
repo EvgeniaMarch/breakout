@@ -156,6 +156,7 @@ function MainField() {
     const leftFieldCoord = fieldRect?.x;
     // console.log('🚀 ~ MainField ~ fieldRect:', fieldRect);
     // console.log('🚀 ~ MainField ~ leftFieldCoord:', leftFieldCoord);
+    //test-1
     const rightFieldCoord = leftFieldCoord + fieldCoords.width;
     console.log('🚀 ~ MainField ~ rightFieldCoord:', rightFieldCoord);
     if (move) {
@@ -254,6 +255,8 @@ function MainField() {
     paltformCoords.width,
     paltformCoords.x,
   ]);
+
+  // test-2
 
   // useEffect(() => {
   //   // console.log('🚀 ~ useEffect ~ fieldRect?.x:', fieldRect?.x);
