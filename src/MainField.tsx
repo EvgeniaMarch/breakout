@@ -1,42 +1,91 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './MaunField.scss';
 
 function MainField() {
   const platformRef = useRef<HTMLDivElement | null>(null);
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const ballRef = useRef<HTMLDivElement | null>(null);
+
+  const blockRef = useRef<HTMLDivElement | null>(null);
   const [move, setMove] = useState(false);
-  // console.log('🚀 ~ MainField ~ move:', move);
+
+  const blockInitState = useMemo(
+    () => ({
+      x: 0,
+      y: 0,
+      width: 400,
+      height: 100,
+      display: 'block',
+    }),
+    [],
+  );
+  const [block, setBlock] = useState(blockInitState);
+  const [hit, setHit] = useState(false);
 
   //Координаты и размеры поля - константа
-  const [fieldCoords, setFieldCoords] = useState({
+
+  const fieldCoords = {
     x: 0,
     y: 0,
     width: 1200,
     height: 700, //const
-  });
+  };
+
+  const initStatePlatform = useMemo(
+    () => ({
+      x: fieldCoords.width / 2 - 50, // находим середину поля и вычитаем половину длины платформы
+      y: 0, // transform задан в стилях (650, поэтому тут 0)
+      width: 100,
+      height: 20,
+    }),
+    [fieldCoords.width],
+  );
 
   // Координаты и размеры платформы. Первоначально вычисляются относительно поля
-  const [paltformCoords, setPaltformCoords] = useState({
-    x: fieldCoords.width / 2 - 50,
-    y: 0,
-    width: 100,
-    height: 20,
-  });
+  const [paltformCoords, setPaltformCoords] = useState(initStatePlatform);
+
+  const initStateBall = useMemo(
+    () => ({
+      x: fieldCoords.width / 2 - 10, // находим середину платформы и вычитаем половину ширины мячика
+      y: 630, // 650 (координаты платформы по y - высота шарика)
+      width: 20,
+      height: 20,
+    }),
+    [fieldCoords.width],
+  );
 
   // Координаты и размеры шара. Первоначально вычисляются относительно платформы
-  const [ballCoords, setBallCoords] = useState({
-    x: fieldCoords.width / 2 - 10,
-    y: 630,
-    width: 20,
-    height: 20,
-  });
-  // console.log('🚀 ~ MainField ~ ballCoords:', ballCoords);
+  const [ballCoords, setBallCoords] = useState(initStateBall);
+
+  const [processingGame, setIsProcessingGame] = useState(false);
+  const [gameOver, setIsGameOver] = useState(false);
+  const [xDirection, setXDirection] = useState(0); // 1 - вправо, -1 - влево
 
   // Координаты поля относительно окна. Для корректировки положения
   const fieldRect = fieldRef.current?.getBoundingClientRect();
+  const blockRect = blockRef.current?.getBoundingClientRect();
+  const ballRightX = ballCoords.x;
+  const ballLeftX = ballRightX - ballCoords.width;
+  const ballY = ballCoords.y;
+  const leftFieldCoord = fieldRect?.x || 0;
+  const topFieldCoord = fieldRect?.y || 0;
 
-  // console.log('🚀 ~ MainField ~ fieldRect:', fieldRect);
+  const topBlock = blockRect?.y || 0;
+  const bottomBlock = topBlock + (blockRect?.height || 0);
+  const leftBlock = blockRect?.x || 0;
+  const rightBlock = leftBlock + (blockRect?.width || 0);
+
+  const rightFieldCoord = leftFieldCoord + fieldCoords.width;
+  const bottomFieldCoord = topFieldCoord + fieldCoords.height;
+
+  const platformLeftX = paltformCoords.x;
+  const platformRightX = paltformCoords.x + paltformCoords.width;
+
+  useEffect(() => {
+    if (hit) {
+      setBlock((p) => ({ ...p, display: 'none' }));
+    }
+  }, [hit]);
 
   // useEffect, который следит за движением мыши и при выходе курсора за пределы поля устанавливает флаг движения в false
   useEffect(() => {
@@ -94,8 +143,6 @@ function MainField() {
     paltformCoords.y,
     platformRef,
   ]);
-  // console.log(paltformCoords.x + paltformCoords.width / 2);
-  // console.log(fieldCoords.width / 2);
 
   // useEffect для остановки платформы при клике мышью
   useEffect(() => {
@@ -140,25 +187,11 @@ function MainField() {
       fieldRef.current?.removeEventListener('mousemove', listener);
     };
   }, [fieldCoords.width, fieldRect, move, paltformCoords.x]);
-  // console.log({
-  //   ballX: ballCoords.x,
-  //   fieldX: fieldRect?.x + fieldCoords.width,
-  // });
 
   // Мяч должен отскакивать под углом 45 от всего
   // В зависимости от чего мяч меняет угол и реализовать
   // Список логических игр. Играть. Вырабатывать новую привычку
   useEffect(() => {
-    const ballX = ballCoords.x;
-    // console.log('🚀 ~ MainField ~ ballX:', ballX);
-    const ballY = ballCoords.y;
-    // console.log('🚀 ~ MainField ~ ballY:', ballY);
-    const leftFieldCoord = fieldRect?.x;
-    // console.log('🚀 ~ MainField ~ fieldRect:', fieldRect);
-    // console.log('🚀 ~ MainField ~ leftFieldCoord:', leftFieldCoord);
-    //test-1
-    const rightFieldCoord = leftFieldCoord + fieldCoords.width;
-    console.log('🚀 ~ MainField ~ rightFieldCoord:', rightFieldCoord);
     if (move) {
       // delta - количество мс, прошедшее с предыдущего кадра
       // const delta = 1000;
@@ -166,123 +199,131 @@ function MainField() {
         const ballRect = ballRef.current?.getBoundingClientRect();
         let deltaY: number = 0;
         let deltaX: number = 0;
-        // if (ballX > rightFieldCoord) {
-        //   deltaX = 0;
-        //   deltaY = 0;
-        //   setMove(false);
-        //   console.log('ballX > rightFieldCoord');
-        if (ballY <= fieldRect?.y) {
+
+        if (
+          ballY <= bottomBlock &&
+          ballLeftX > leftBlock &&
+          ballRightX < rightBlock
+        ) {
+          deltaY = 1;
+          deltaX = 1;
+          // setBlock((p) => ({ ...p, display: 'none' }));
+        }
+
+        // мяч отскакивает от верхней границы поля
+        if (ballY <= topFieldCoord) {
           deltaY = 1;
         }
-        if (ballY >= fieldRect?.y + fieldCoords.height) {
-          deltaY = -1;
-        }
-        // }
-        // console.log('🚀 ~ ballMoving ~ paltformCoords:', paltformCoords);
+
+        // первоначальное движение мяча
         if (
-          ballY === 630 &&
+          ballY === initStateBall.y &&
           paltformCoords.x + paltformCoords.width / 2 < fieldCoords.width / 2 &&
-          ballX < rightFieldCoord
+          ballRightX < rightFieldCoord &&
+          !processingGame
         ) {
-          // console.log('1');
-
           deltaX = 1;
           deltaY = -1;
+          setIsProcessingGame(true); //игра пошла
         }
+        // первоначальное движение мяча
         if (
-          ballY === 630 &&
+          ballY === initStateBall.y &&
           paltformCoords.x + paltformCoords.width / 2 > fieldCoords.width / 2 &&
-          ballX >= leftFieldCoord
+          ballRightX >= leftFieldCoord &&
+          !processingGame
         ) {
-          // console.log('2');
-
           deltaX = -1;
           deltaY = -1;
+          setIsProcessingGame(true); //игра пошла
         }
-        // if (
-        //   ballY === 630 &&
-        //   ballX > paltformCoords.x &&
-        //   ballX < paltformCoords.x + paltformCoords.width
-        // ) {
-        //   // console.log('Мяч попал в платформу');
 
-        //   deltaY = -1;
-        // }
+        // не поймали мяч платформой
+        if (
+          processingGame &&
+          ballY === initStateBall.y &&
+          (ballLeftX > platformRightX || ballRightX < platformLeftX)
+        ) {
+          setBallCoords(initStateBall);
+          setPaltformCoords(initStatePlatform);
+          setMove(false);
+          setIsGameOver(true);
+          setIsProcessingGame(false);
+          console.log(123);
+        }
 
-        if (ballX <= leftFieldCoord) {
-          console.log({ leftFieldCoord, ballX });
+        // поймали мяч платформой
+        if (
+          processingGame &&
+          ballY === initStateBall.y &&
+          ballLeftX < platformRightX &&
+          ballRightX > platformLeftX
+        ) {
+          deltaY = -1;
+        }
+
+        // мяч отскакивает от левого угла поля
+        if (ballRightX <= leftFieldCoord) {
           deltaX = 1;
-          // deltaY = 1;
         }
-        if (ballX >= rightFieldCoord) {
-          // console.log('4');
 
+        // мяч отскакивает от правого угла поля
+        if (ballRightX >= rightFieldCoord) {
           deltaX = -1;
-          // deltaY = -1;
         }
 
         if (ballRect) {
-          // console.log(ballX, fieldRect?.x);
-          // console.log('🚀 ~ ballMoving ~ deltaX:', deltaX);
           setBallCoords((p) => ({
             ...p,
             x: p.x + deltaX,
             y: p.y + deltaY,
           }));
         }
-        // if (ballCoords.x < fieldRect?.x + fieldCoords.width) {
-        // if (ballCoords.x === fieldRect?.x) {
-        //   console.log(1);
 
-        //   setBallCoords((p) => ({
-        //     ...p,
-        //     x: p.x + 4,
-        //     y: p.y,
-        //   }));
-        // }
         requestAnimationFrame(ballMoving);
-        // console.log('END');
-        // }
       });
     }
   }, [
+    ballCoords.width,
     ballCoords.x,
     ballCoords.y,
+    ballLeftX,
+    ballRightX,
+    ballY,
+    bottomBlock,
+    fieldCoords.height,
     fieldCoords.width,
     fieldRect,
     fieldRect?.x,
+    initStateBall,
+    initStatePlatform,
+    leftBlock,
+    leftFieldCoord,
     move,
     paltformCoords.width,
     paltformCoords.x,
+    platformLeftX,
+    platformRightX,
+    processingGame,
+    rightBlock,
+    rightFieldCoord,
+    topFieldCoord,
+    xDirection,
   ]);
 
-  // test-2
-  //test-3
-
-  // useEffect(() => {
-  //   // console.log('🚀 ~ useEffect ~ fieldRect?.x:', fieldRect?.x);
-  //   if (ballCoords.x === fieldRect?.x) {
-  //     // console.log(1);
-
-  //     setBallCoords((p) => ({
-  //       ...p,
-  //       x: p.x + 1,
-  //       y: p.y,
-  //     }));
-  //   }
-  // }, [ballCoords.x, fieldRect?.x]);
-
-  return (
-    <div
-      className="field"
-      ref={fieldRef}
-      style={{
-        width: fieldCoords.width,
-        height: fieldCoords.height,
-        top: fieldCoords.y,
-        left: fieldCoords.x,
-      }}
-    >
+  const platformWithBall = (
+    <>
+      <div
+        className="block"
+        ref={blockRef}
+        style={{
+          width: block.width,
+          height: block.height,
+          left: block.x,
+          top: block.y,
+          display: block.display,
+        }}
+      ></div>
       <div
         className="ball"
         ref={ballRef}
@@ -303,6 +344,21 @@ function MainField() {
           top: paltformCoords.y,
         }}
       ></div>
+    </>
+  );
+
+  return (
+    <div
+      className="field"
+      ref={fieldRef}
+      style={{
+        width: fieldCoords.width,
+        height: fieldCoords.height,
+        top: fieldCoords.y,
+        left: fieldCoords.x,
+      }}
+    >
+      {gameOver ? <div>GAME OVER</div> : platformWithBall}
     </div>
   );
 }

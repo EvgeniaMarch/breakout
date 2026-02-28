@@ -7,7 +7,7 @@
     border-radius: 5px;
     background-color: rgb(118, 25, 25);
     position: absolute;
-    transform: translate(var(--platform-x-position), 650px)
+    transform: translate(var(--platform-x-position), 650px);
   }
   .ball {
     // height: 20px;
@@ -16,5 +16,11 @@
     background-color: rgb(255, 0, 0);
     position: absolute;
     // transform: translate(var(--ball-x-position), var(--ball-y-position));
+    // transform: translate(var(--ball-x-position), 630);
+  }
+
+  .block {
+    background-color: rgb(113, 212, 227);
+    border: 1px solid black;
   }
 }
